@@ -27,18 +27,74 @@ Styles.Theme = {
 
 -- 태그 셀렉터별 시각 속성 규칙
 local RULES: { [string]: { [string]: any } } = {
-	[".Window"] = { BackgroundColor3 = Styles.Theme.color.background, BackgroundTransparency = 0.05, BorderSizePixel = 0 },
-	[".TitleBar"] = { BackgroundColor3 = Styles.Theme.color.titleBar, BorderSizePixel = 0 },
-	[".TitleText"] = { TextColor3 = Styles.Theme.color.text, BackgroundTransparency = 1, TextSize = 14 },
-	[".CloseButton"] = { BackgroundColor3 = Styles.Theme.color.close, TextColor3 = Styles.Theme.color.text, BorderSizePixel = 0, TextSize = 16 },
-	[".WindowContent"] = { BackgroundTransparency = 1 },
-	[".ResizeHandle"] = { BackgroundColor3 = Styles.Theme.color.accent, BackgroundTransparency = 0.4, BorderSizePixel = 0 },
-	[".TopBar"] = { BackgroundColor3 = Styles.Theme.color.titleBar, BackgroundTransparency = 0.1, BorderSizePixel = 0 },
-	[".Btn"] = { BackgroundColor3 = Styles.Theme.color.button, TextColor3 = Styles.Theme.color.text, BorderSizePixel = 0, TextSize = 14 },
-	[".LabelText"] = { TextColor3 = Styles.Theme.color.text, BackgroundTransparency = 1, TextSize = 13 },
-	[".SliderTrack"] = { BackgroundColor3 = Styles.Theme.color.track, BorderSizePixel = 0 },
-	[".SliderFill"] = { BackgroundColor3 = Styles.Theme.color.accent, BorderSizePixel = 0 },
-	[".SliderKnob"] = { BackgroundColor3 = Styles.Theme.color.knob, BorderSizePixel = 0 },
+	
+	[".Window"] = { 
+		BackgroundColor3 = Styles.Theme.color.background, 
+		BackgroundTransparency = 0.05, BorderSizePixel = 0 
+	},
+
+	[".TitleBar"] = { 
+		BackgroundColor3 = Styles.Theme.color.titleBar, 
+		BorderSizePixel = 0 
+	},
+
+	[".TitleText"] = { 
+		TextColor3 = Styles.Theme.color.text, 
+		BackgroundTransparency = 1, 
+		TextSize = 14 
+	},
+
+	[".CloseButton"] = { 
+		BackgroundColor3 = Styles.Theme.color.close, 
+		TextColor3 = Styles.Theme.color.text, 
+		BorderSizePixel = 0, 
+		TextSize = 16 
+	},
+
+	[".WindowContent"] = { 
+		BackgroundTransparency = 1 
+	},
+
+	[".ResizeHandle"] = { 
+		BackgroundColor3 = Styles.Theme.color.accent, 
+		BackgroundTransparency = 0.4, 
+		BorderSizePixel = 0 
+	},
+
+	[".TopBar"] = { 
+		BackgroundColor3 = Styles.Theme.color.titleBar, 
+		BackgroundTransparency = 0.1, 
+		BorderSizePixel = 0 
+	},
+
+	[".Btn"] = { 
+		BackgroundColor3 = Styles.Theme.color.button, 
+		TextColor3 = Styles.Theme.color.text, 
+		BorderSizePixel = 0, 
+		TextSize = 14 
+	},
+
+	[".LabelText"] = { 
+		TextColor3 = Styles.Theme.color.text, 
+		BackgroundTransparency = 1, 
+		TextSize = 13 
+	},
+
+	[".SliderTrack"] = { 
+		BackgroundColor3 = Styles.Theme.color.track, 
+		BorderSizePixel = 0 
+	},
+
+	[".SliderFill"] = { 
+		BackgroundColor3 = Styles.Theme.color.accent, 
+		BorderSizePixel = 0 
+	},
+
+	[".SliderKnob"] = { 
+		BackgroundColor3 = Styles.Theme.color.knob, 
+		BorderSizePixel = 0 
+	},
+	
 }
 
 -- StyleSheet 인스턴스를 만들어 반환한다.
