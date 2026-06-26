@@ -70,6 +70,7 @@ for order, def in windowDefs do
 	icon:setCaption(def.title)
 	icon:setOrder(order)
 	icon:setLeft()
+	icon:autoDeselect(false) -- 다른 아이콘 선택해도 풀리지 않게 (창 여러 개 동시 표시)
 	icon.toggled:Connect(function(isSelected)
 		state[def.key] = isSelected
 	end)
@@ -91,6 +92,7 @@ hideIcon:setLabel("모두 숨기기")
 hideIcon:setCaption("모든 창 숨기기/보이기")
 hideIcon:setOrder(99)
 hideIcon:setRight()
+hideIcon:autoDeselect(false)
 hideIcon.toggled:Connect(function(isSelected)
 	state.masterHidden = isSelected
 end)
