@@ -8,9 +8,6 @@
       },
       "Shared": {
         "$path": "src/shared"
-      },
-      "$attributes": {
-        "Emitter2D_Version": 1.26
       }
     },
     "ServerScriptService": {
@@ -22,15 +19,6 @@
       "StarterPlayerScripts": {
         "Client": {
           "$path": "src/client"
-        }
-      },
-      "$properties": {
-        "AvatarJointUpgrade_SerializedRollout": "Enabled",
-        "CameraMaxZoomDistance": 128.0,
-        "CharacterBreakJointsOnDeath": false,
-        "CharacterUseJumpPower": false,
-        "PlayerModuleStatus": {
-          "Int32": 0
         }
       }
     }
