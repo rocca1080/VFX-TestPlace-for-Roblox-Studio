@@ -2,33 +2,37 @@
   "name": "VFX_TestPlace",
   "tree": {
     "$className": "DataModel",
-
     "ReplicatedStorage": {
+      "Modules": {
+        "$path": "src/Modules"
+      },
       "Shared": {
         "$path": "src/shared"
       },
-
-      "Modules": {
-        "$path": "src/Modules"
+      "$attributes": {
+        "Emitter2D_Version": 1.26
       }
-      
     },
-
     "ServerScriptService": {
       "Server": {
         "$path": "src/server"
       }
     },
-
-    
-
     "StarterPlayer": {
       "StarterPlayerScripts": {
         "Client": {
           "$path": "src/client"
         }
+      },
+      "$properties": {
+        "AvatarJointUpgrade_SerializedRollout": "Enabled",
+        "CameraMaxZoomDistance": 128.0,
+        "CharacterBreakJointsOnDeath": false,
+        "CharacterUseJumpPower": false,
+        "PlayerModuleStatus": {
+          "Int32": 0
+        }
       }
     }
-
   }
 }
