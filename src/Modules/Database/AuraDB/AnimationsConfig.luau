@@ -1,7 +1,27 @@
-local AnimationsConfig = {
-	
-	
-	APOSTOLOS = {
+type AnimationSet = { [string]: number }      -- 애니메이션 이름 → 애셋 ID
+
+export type AuraAnimations = {
+	basicAnimation: AnimationSet,         -- idle/walk/jump 등 어떤 조합이든 허용
+	additionalAnimation: AnimationSet?,   -- 선택적
+}
+
+local Animations: { [string]: AuraAnimations } = {
+
+	-- ResetAnimation()의 Roblox 기본 애니메이션 ID 프리셋
+	["Default"] = {
+		basicAnimation = {
+			idle = 180435571,   -- idle.Animation1
+			walk = 180426354,
+			run = 180426354,
+			jump = 125750702,
+			fall = 180436148,
+			climb = 180436334,
+			sit = 178130996,
+			toolnone = 182393478,
+		}
+	},
+
+	["APOSTOLOS"] = {
 		basicAnimation = {
 			idle = 108806952478199,
 		},
@@ -9,122 +29,122 @@ local AnimationsConfig = {
 			spin = 123788816117414
 		}
 	},
-	Astraios = {
+	["Astraios"] = {
 		basicAnimation = {
-			idle = 110090760499947, 
+			idle = 110090760499947,
 		},
 	},
-	ASTRAIOS_V2 = {
+	["ASTRAIOS_V2"] = {
 		basicAnimation = {
-			idle = 98572784316773, 
+			idle = 98572784316773,
 		},
 	},
-	ASTRAIOS_V2_1 = {
+	["ASTRAIOS_V2_1"] = {
 		basicAnimation = {
-			idle = 98572784316773, 
+			idle = 98572784316773,
 		},
 	},
-	GARGANTUA = {
+	["GARGANTUA"] = {
 		basicAnimation = {
-			idle = 82036614659771, 
+			idle = 82036614659771,
 		},
 	},
-	rabbit = {
+	["rabbit"] = {
 		basicAnimation = {
-			idle = 109773642607364, 
+			idle = 109773642607364,
 		},
 	},
-	Warlock = {
+	["Warlock"] = {
 		basicAnimation = {
-			idle = 89091128613619, 
+			idle = 89091128613619,
 		},
 	},
-	Anima = {
+	["Anima"] = {
 		basicAnimation = {
-			idle = 87489925622784, 
+			idle = 87489925622784,
 		},
 	},
-	Elude = {
+	["Elude"] = {
 		basicAnimation = {
-			idle = 112453806031845, 
+			idle = 112453806031845,
 		},
 	},
-	PROLOGUE_rework = {
+	["PROLOGUE_rework"] = {
 		basicAnimation = {
-			idle = 111105235929512, 
+			idle = 111105235929512,
 		},
 	},
-	PROLOGUE = {
+	["PROLOGUE"] = {
 		basicAnimation = {
-			idle = 100283673774826, 
+			idle = 100283673774826,
 		},
 	},
-	Parasol = {
+	["Parasol"] = {
 		basicAnimation = {
-			idle = 101233381441149, 
+			idle = 101233381441149,
 			walk = 96965936208323,
 		},
 	},
-	Paintgun = {
+	["Paintgun"] = {
 		basicAnimation = {
-			idle = 134994892070328, 
+			idle = 134994892070328,
 			walk = 98366463075729,
 		}
 	},
-	
-	SandBasket = {
+
+	["SandBasket"] = {
 		basicAnimation = {
-			idle = 99339441531347, 
+			idle = 99339441531347,
 			walk = 136011481992859,
 		}
 	},
-	
-	Megaphone = {
+
+	["Megaphone"] = {
 		basicAnimation = {
-			idle = 80336095048971, 
+			idle = 80336095048971,
 		}
 	},
-	
-	hand = {
+
+	["hand"] = {
 		basicAnimation = {
-			idle = 92300103187012, 
+			idle = 92300103187012,
 			walk = 91723268622405,
 		}
 	},
-	
-	bosstest = {
+
+	["bosstest"] = {
 		basicAnimation = {
-			idle = 110056137127137, 
+			idle = 110056137127137,
 		}
 	},
-	
-	SandWorm = {
+
+	["SandWorm"] = {
 		basicAnimation = {
-			idle = 82551011118743, 
+			idle = 82551011118743,
 			walk = 113030751374647,
 		}
 	},
-	
-	SandWormV2 = {
+
+	["SandWormV2"] = {
 		basicAnimation = {
-			idle = 105382745754555, 
+			idle = 105382745754555,
 		}
 	},
-	
-	XYZAura = {
+
+	["XYZAura"] = {
 		basicAnimation = {
-			idle = 99079263463798, 
+			idle = 99079263463798,
 			walk = 116176283227580,
 		}
 	},
-	
-	treeAura = {
+
+	["treeAura"] = {
 		basicAnimation = {
-			idle = 89870006429283, 
+			idle = 89870006429283,
 		}
 	},
-	
-	Velvet = {
+
+	["Velvet"] = {
 		basicAnimation = {
 			idle = 122523185466708,
 			walk = 75919395126491,
@@ -132,47 +152,53 @@ local AnimationsConfig = {
 			fall = 127239301640306
 		}
 	},
-	
-	redmoonAura = {
+
+	["redmoonAura"] = {
 		basicAnimation = {
 			idle = 126939932722870,
 		}
 	},
-	COTCM = {
+	["COTCM"] = {
 		basicAnimation = {
 			idle = 91065242358745
 		}
-		
+
 	},
-	RedMoonAura2222 = {
+	["RedMoonAura2222"] = {
 		basicAnimation = {
 			idle = 112101789071231,
 			walk = 133910610731434,
 		}
 	}
-	
+
 }
 
 
+local AnimationsConfig = {
+	animations = Animations,
+}
+
 function AnimationsConfig:ResetAnimation(character)
 	local animate = character:WaitForChild("Animate")
-	-- Idle
-	animate.idle.Animation1.AnimationId = "rbxassetid://180435571"
-	animate.idle.Animation2.AnimationId = "rbxassetid://180435792"
+	local preset = self.animations["Default"].basicAnimation
+
+	-- Idle (Animation1/Animation2 모두 Default의 idle ID 사용)
+	animate.idle.Animation1.AnimationId = "rbxassetid://" .. preset.idle
+	animate.idle.Animation2.AnimationId = "rbxassetid://" .. preset.idle
 	-- Walk
-	animate.walk.WalkAnim.AnimationId = "rbxassetid://180426354"
+	animate.walk.WalkAnim.AnimationId = "rbxassetid://" .. preset.walk
 	-- Run
-	animate.run.RunAnim.AnimationId = "rbxassetid://180426354"
+	animate.run.RunAnim.AnimationId = "rbxassetid://" .. preset.run
 	-- Jump
-	animate.jump.JumpAnim.AnimationId = "rbxassetid://125750702"
+	animate.jump.JumpAnim.AnimationId = "rbxassetid://" .. preset.jump
 	-- Fall
-	animate.fall.FallAnim.AnimationId = "rbxassetid://180436148"
+	animate.fall.FallAnim.AnimationId = "rbxassetid://" .. preset.fall
 	-- Climb
-	animate.climb.ClimbAnim.AnimationId = "rbxassetid://180436334"
+	animate.climb.ClimbAnim.AnimationId = "rbxassetid://" .. preset.climb
 	-- Sit
-	animate.sit.SitAnim.AnimationId = "rbxassetid://178130996"
+	animate.sit.SitAnim.AnimationId = "rbxassetid://" .. preset.sit
 	-- ToolNone (도구 들고 있는 상태)
-	animate.toolnone.ToolNoneAnim.AnimationId = "rbxassetid://182393478"
+	animate.toolnone.ToolNoneAnim.AnimationId = "rbxassetid://" .. preset.toolnone
 end
 
 return AnimationsConfig
