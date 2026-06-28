@@ -19,7 +19,8 @@ function Button.new(props: ButtonProps): TextButton
 		Name = "Button",
 		Text = props.Text or "Button",
 		Size = props.Size or UDim2.new(1, 0, 0, 28),
-		AutoButtonColor = true,
+		AutoButtonColor = false, -- hover/press는 Interactive 바인더(.Btn States)가 트윈으로 처리
+
 		LayoutOrder = props.LayoutOrder or 0,
 		"Btn",
 		DI.UICorner({ CornerRadius = UDim.new(0, 4) }),

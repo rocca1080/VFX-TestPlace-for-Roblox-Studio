@@ -4,6 +4,7 @@
 --   lightingVisible  : 라이팅 세팅 창 표시 여부
 --   auraVisible      : Aura 테스트 창 표시 여부
 --   cutsceneVisible  : 컷신 테스트 창 표시 여부
+--   componentsVisible: 컴포넌트 테스트 창 표시 여부
 --
 -- 참고: DeclarativeInstance.reactiveValue는 현재 Observer API와 메서드명이 맞지 않아
 --       (subscribeKey 등 부재) 동작하지 않으므로, 바인딩은 Observer:bindToObservable를 사용한다.
@@ -20,6 +21,7 @@ function State.new()
 		lightingVisible = false,
 		auraVisible = false,
 		cutsceneVisible = false,
+		componentsVisible = false,
 	})
 end
 

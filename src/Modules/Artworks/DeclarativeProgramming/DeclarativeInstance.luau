@@ -165,6 +165,7 @@ constructor.UIFlexItem = new("UIFlexItem")
 constructor.UIGradient = new("UIGradient")
 constructor.UIPadding = new("UIPadding")
 constructor.UIScale = new("UIScale")
+constructor.UIShadow = new("UIShadow")
 constructor.UIStroke = new("UIStroke")
 
 constructor.UIAspectRatioConstraint = new("UIAspectRatioConstraint")
@@ -202,6 +203,7 @@ type UIInstances = {
 	UIGradient : UIGradient,
 	UIPadding : UIPadding,
 	UIScale : UIScale,
+	UIShadow : UIShadow,
 	UIStroke : UIStroke,
 
 	UIAspectRatioConstraint : UIAspectRatioConstraint,

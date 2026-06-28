@@ -10,6 +10,7 @@ local DI = Artworks.DeclarativeInstance
 
 local Styles = require(script.Parent.Parent.Styles.StyleSheet)
 local Theme = Styles.Theme
+local Icons = require(script.Parent.Parent.Styles.Icons)
 
 export type WindowProps = {
 	Title: string?,
@@ -36,6 +37,7 @@ local function makeDraggable(handle: GuiObject, target: GuiObject)
 
 	local function stop()
 		dragging = false
+		target:SetAttribute("Pressed", false) -- 누름 해제 → 외곽선/그림자 원복 (Interactive 바인더)
 		if moveConn then moveConn:Disconnect() end
 		if endConn then endConn:Disconnect() end
 	end
@@ -45,6 +47,7 @@ local function makeDraggable(handle: GuiObject, target: GuiObject)
 			return
 		end
 		dragging = true
+		target:SetAttribute("Pressed", true) -- 타이틀바 누름 → 외곽선 흰색 + 그림자 강조
 		dragStart = input.Position
 		startPos = target.Position
 
@@ -78,6 +81,7 @@ local function makeResizable(handle: GuiObject, target: GuiObject, minSize: Vect
 
 	local function stop()
 		resizing = false
+		target:SetAttribute("Pressed", false) -- 누름 해제 → 외곽선/그림자 원복
 		if moveConn then moveConn:Disconnect() end
 		if endConn then endConn:Disconnect() end
 	end
@@ -87,6 +91,7 @@ local function makeResizable(handle: GuiObject, target: GuiObject, minSize: Vect
 			return
 		end
 		resizing = true
+		target:SetAttribute("Pressed", true) -- 리사이즈 핸들 누름 → 외곽선 흰색 + 그림자 강조
 		startInput = input.Position
 		startSize = target.Size
 
@@ -112,25 +117,49 @@ end
 function Window.new(props: WindowProps): Window
 	local minSize = props.MinSize or Vector2.new(200, 140)
 	local height = Theme.dim.titleBarHeight
+	local shadowBlur = Theme.dim.shadowBlur
+	local shadowTransparency = Theme.dim.shadowTransparency
+	local outlineThickness = Theme.dim.outlineThickness
+	local imagePadding = Theme.dim.imagePadding
+	local titleBarGap = Theme.dim.titleBarGap
+	local gap = Theme.dim.gap
+	local outlineColor1 = Theme.color.outlineColor1
+	local backgroundColor1 = Theme.color.backgroundColor1
+	local backgroundColor2 = Theme.color.backgroundColor2
+	local textColor = Theme.color.text
 
 	-- 타이틀
 	local titleLabel = DI.TextLabel({
 		Name = "Title",
 		Text = props.Title or "Window",
-		Size = UDim2.new(1, -(height + 8), 1, 0),
-		Position = UDim2.fromOffset(8, 0),
+		Size = UDim2.new(1, 0, 1, 0),
 		"TitleText",
 	})
 	titleLabel.TextXAlignment = Enum.TextXAlignment.Left
 
-	local closeButton = DI.TextButton({
+	-- 닫기 버튼: 클릭 영역은 풀사이즈(투명 버튼), 아이콘은 자식 ImageLabel로 표시.
+	-- UIPadding(imagePadding)이 자식 아이콘을 안쪽으로 들여 아이콘만 작아지고 클릭 영역은 유지된다.
+	local closeIcon = DI.ImageLabel({
+		Name = "Icon",
+		Size = UDim2.fromScale(1, 1),
+		BackgroundTransparency = 1,
+		"Icon"
+	})
+	closeIcon.Image = Icons.close
+
+	local closeButton = DI.ImageButton({
 		Name = "Close",
-		Text = "x",
-		Size = UDim2.fromOffset(height - 6, height - 6),
-		Position = UDim2.new(1, -(height - 3), 0, 3),
-		AutoButtonColor = true,
+		Size = UDim2.fromScale(1, 1),
+		BackgroundTransparency = 1,
+		AutoButtonColor = false, -- hover/press는 Interactive 바인더가 트윈으로 처리
 		"CloseButton",
-		DI.UICorner({ CornerRadius = UDim.new(0, 4) }),
+		DI.UIPadding({
+			PaddingLeft = UDim.new(0, imagePadding),
+			PaddingRight = UDim.new(0, imagePadding),
+			PaddingTop = UDim.new(0, imagePadding),
+			PaddingBottom = UDim.new(0, imagePadding),
+		}),
+		closeIcon,
 		Activated = function()
 			if props.OnClose then props.OnClose() end
 		end,
@@ -141,23 +170,31 @@ function Window.new(props: WindowProps): Window
 		Size = UDim2.new(1, 0, 0, height),
 		Active = true,
 		"TitleBar",
+		DI.UIListLayout({
+			Padding = UDim.new(0, gap),
+			FillDirection = Enum.FillDirection.Horizontal,
+			HorizontalFlex = Enum.UIFlexAlignment.Fill,
+			VerticalAlignment = Enum.VerticalAlignment.Center,
+			SortOrder = Enum.SortOrder.LayoutOrder
+		}),
 		DI.UICorner({ CornerRadius = Theme.dim.corner }),
+		DI.UIPadding({
+			PaddingLeft = UDim.new(0, titleBarGap),
+			PaddingRight = UDim.new(0, titleBarGap),
+			PaddingTop = UDim.new(0, titleBarGap),
+			PaddingBottom = UDim.new(0, titleBarGap),
+		}),
 		titleLabel,
 		closeButton,
 	})
 
-	-- 컨텐츠 영역 (패널이 여기로 들어옴)
+	-- 컨텐츠 영역 (패널이 여기로 들어옴). 일반 Frame.
+	-- 스크롤/패딩은 패널 쪽(ScrollPanel 컴포넌트)이 담당한다.
 	local content = DI.Frame({
 		Name = "Content",
 		Position = UDim2.fromOffset(0, height),
 		Size = UDim2.new(1, 0, 1, -height),
 		"WindowContent",
-		DI.UIPadding({
-			PaddingLeft = UDim.new(0, Theme.dim.gap),
-			PaddingRight = UDim.new(0, Theme.dim.gap),
-			PaddingTop = UDim.new(0, Theme.dim.gap),
-			PaddingBottom = UDim.new(0, Theme.dim.gap),
-		}),
 	})
 
 	-- 우하단 리사이즈 핸들
@@ -181,6 +218,23 @@ function Window.new(props: WindowProps): Window
 		"Window",
 		DI.UICorner({ CornerRadius = Theme.dim.corner }),
 		DI.UISizeConstraint({ MinSize = minSize }),
+		-- 배경 2색 그래디언트 (위→아래). 색은 StyleSheet의 backgroundColor1/2로 설정.
+		DI.UIGradient({
+			Rotation = 90,
+			Color = ColorSequence.new({
+				ColorSequenceKeypoint.new(0, backgroundColor1),
+				ColorSequenceKeypoint.new(1, backgroundColor2),
+			}),
+		}),
+		DI.UIShadow({ 
+			BlurRadius = shadowBlur,
+			Transparency = shadowTransparency,
+		}),
+		-- 외곽선: 단색(그래디언트 없음) → Color를 직접 트윈할 수 있음 (Pressed 시 accent로)
+		DI.UIStroke({
+			Color = outlineColor1,
+			Thickness = outlineThickness,
+		}),
 		titleBar,
 		content,
 		resizeHandle,
