@@ -11,6 +11,8 @@ local DI = Artworks.DeclarativeInstance
 local Styles = require(script.Parent.Parent.Styles.StyleSheet)
 local Theme = Styles.Theme
 local Icons = require(script.Parent.Parent.Styles.Icons)
+local uniformPadding = require(script.Parent.Parent.Styles.Padding)
+local ZOrder = require(script.Parent.Parent.Styles.ZOrder)
 
 export type WindowProps = {
 	Title: string?,
@@ -23,9 +25,32 @@ export type WindowProps = {
 export type Window = {
 	Root: Frame,
 	Content: Frame,
+	-- 닫기 애니메이션(exit 트윈) 재생 후 파괴. 호출자는 Root:Destroy() 대신 이걸 쓴다.
+	Close: () -> (),
 }
 
 local Window = {}
+
+-- 주어진 화면 좌표에서 "가장 앞에 있는(겹친 것 중 최상단)" 창 root를 찾는다.
+-- InputBegan은 겹친 창 모두에서 발동하므로(관찰용 — 가려져도 sink 안 됨, 발동 순서도 보장 X),
+-- 이벤트 순서에 의존하지 않고 실제 렌더 순서(GetGuiObjectsAtPosition: 앞→뒤)로 맨 앞 창만 가려낸다.
+-- 창 root는 "Window" 태그로 식별한다.
+local function frontWindowAt(fromObj: GuiObject, x: number, y: number): GuiObject?
+	local playerGui = fromObj:FindFirstAncestorWhichIsA("PlayerGui")
+	if not playerGui then
+		return nil
+	end
+	for _, obj in (playerGui :: PlayerGui):GetGuiObjectsAtPosition(x, y) do
+		local cur: Instance? = obj
+		while cur do
+			if cur:IsA("GuiObject") and cur:HasTag("Window") then
+				return cur
+			end
+			cur = cur.Parent
+		end
+	end
+	return nil
+end
 
 -- handle 위에서 드래그하면 target을 이동시킨다.
 local function makeDraggable(handle: GuiObject, target: GuiObject)
@@ -46,6 +71,7 @@ local function makeDraggable(handle: GuiObject, target: GuiObject)
 		if input.UserInputType ~= Enum.UserInputType.MouseButton1 and input.UserInputType ~= Enum.UserInputType.Touch then
 			return
 		end
+		if frontWindowAt(target, input.Position.X, input.Position.Y) ~= target then return end -- 맨 앞 창만 끌림
 		dragging = true
 		target:SetAttribute("Pressed", true) -- 타이틀바 누름 → 외곽선 흰색 + 그림자 강조
 		dragStart = input.Position
@@ -90,6 +116,7 @@ local function makeResizable(handle: GuiObject, target: GuiObject, minSize: Vect
 		if input.UserInputType ~= Enum.UserInputType.MouseButton1 and input.UserInputType ~= Enum.UserInputType.Touch then
 			return
 		end
+		if frontWindowAt(target, input.Position.X, input.Position.Y) ~= target then return end -- 맨 앞 창만 반응
 		resizing = true
 		target:SetAttribute("Pressed", true) -- 리사이즈 핸들 누름 → 외곽선 흰색 + 그림자 강조
 		startInput = input.Position
@@ -121,7 +148,6 @@ function Window.new(props: WindowProps): Window
 	local shadowTransparency = Theme.dim.shadowTransparency
 	local outlineThickness = Theme.dim.outlineThickness
 	local imagePadding = Theme.dim.imagePadding
-	local titleBarGap = Theme.dim.titleBarGap
 	local gap = Theme.dim.gap
 	local outlineColor1 = Theme.color.outlineColor1
 	local backgroundColor1 = Theme.color.backgroundColor1
@@ -171,19 +197,14 @@ function Window.new(props: WindowProps): Window
 		Active = true,
 		"TitleBar",
 		DI.UIListLayout({
-			Padding = UDim.new(0, gap),
+			Padding = gap,
 			FillDirection = Enum.FillDirection.Horizontal,
 			HorizontalFlex = Enum.UIFlexAlignment.Fill,
 			VerticalAlignment = Enum.VerticalAlignment.Center,
 			SortOrder = Enum.SortOrder.LayoutOrder
 		}),
 		DI.UICorner({ CornerRadius = Theme.dim.corner }),
-		DI.UIPadding({
-			PaddingLeft = UDim.new(0, titleBarGap),
-			PaddingRight = UDim.new(0, titleBarGap),
-			PaddingTop = UDim.new(0, titleBarGap),
-			PaddingBottom = UDim.new(0, titleBarGap),
-		}),
+		uniformPadding(Theme.dim.panelPadding),
 		titleLabel,
 		closeButton,
 	})
@@ -205,7 +226,7 @@ function Window.new(props: WindowProps): Window
 		Size = UDim2.fromOffset(Theme.dim.resizeHandle, Theme.dim.resizeHandle),
 		Position = UDim2.new(1, -Theme.dim.resizeHandle, 1, -Theme.dim.resizeHandle),
 		"ResizeHandle",
-		DI.UICorner({ CornerRadius = UDim.new(0, 4) }),
+		DI.UICorner({ CornerRadius = Theme.dim.corner }),
 	})
 
 	local root = DI.Frame({
@@ -243,9 +264,47 @@ function Window.new(props: WindowProps): Window
 	makeDraggable(titleBar, root)
 	makeResizable(resizeHandle, root, minSize)
 
+	-- 창 아무 곳이나 누르면 최상단으로 올린다 (겹친 창 중 최상단만 반응).
+	root.InputBegan:Connect(function(input)
+		if input.UserInputType ~= Enum.UserInputType.MouseButton1 and input.UserInputType ~= Enum.UserInputType.Touch then
+			return
+		end
+		if frontWindowAt(root, input.Position.X, input.Position.Y) == root then
+			root.ZIndex = ZOrder.next()
+		end
+	end)
+
+	-- 애니메이션 닫기: "Open"=false로 내려 Interactive 바인더의 exit 트윈을 재생시키고,
+	-- 트윈 완료 시 바인더가 manageVisible로 Visible=false를 찍으면 그 신호를 받아 파괴한다.
+	-- (Window가 트윈 길이를 직접 알 필요 없이 생명주기 신호에만 의존)
+	local closing = false
+	local function close()
+		if closing then return end
+		closing = true
+		-- 이미 닫혀 있거나(보이지 않음) 열린 적 없으면 트윈 없이 바로 파괴
+		if not root.Visible or root:GetAttribute("Open") ~= true then
+			root:Destroy()
+			return
+		end
+		root:SetAttribute("Open", false)
+		local conn: RBXScriptConnection? = nil
+		conn = root:GetPropertyChangedSignal("Visible"):Connect(function()
+			if not root.Visible then
+				if conn then conn:Disconnect() end
+				root:Destroy()
+			end
+		end)
+		-- 안전장치: 바인더가 없거나(태그 미바인딩) 트윈이 끝나지 않아도 누수 없도록 강제 파괴
+		task.delay(1, function()
+			if conn then conn:Disconnect() end
+			if root.Parent then root:Destroy() end
+		end)
+	end
+
 	return {
 		Root = root,
 		Content = content,
+		Close = close,
 	}
 end
 

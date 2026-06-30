@@ -12,6 +12,8 @@ local DI = Artworks.DeclarativeInstance
 
 local Styles = require(script.Parent.Parent.Styles.StyleSheet)
 local Theme = Styles.Theme
+local uniformPadding = require(script.Parent.Parent.Styles.Padding)
+local ZOrder = require(script.Parent.Parent.Styles.ZOrder)
 
 export type EnumInputProps = {
 	Options: { string }?,
@@ -41,8 +43,8 @@ function EnumInput.new(props: EnumInputProps): EnumInput
 		Text = "",
 		AutoButtonColor = false, -- hover/press는 Interactive 바인더(.Btn States)가 트윈으로 처리
 		Size = UDim2.fromScale(1, 1),
-		"Btn",
-		DI.UICorner({ CornerRadius = UDim.new(0, 4) }),
+		"Input",
+		DI.UICorner({ CornerRadius = Theme.dim.corner }),
 		DI.UIPadding({
 			PaddingLeft = UDim.new(0, Theme.dim.inputPadding),
 			PaddingRight = UDim.new(0, Theme.dim.inputPadding),
@@ -67,25 +69,23 @@ function EnumInput.new(props: EnumInputProps): EnumInput
 			return
 		end
 
+		-- 팝업은 항상 최상단 창 위에 뜨도록 현재 z-order 바로 위에 띄운다.
+		local base = ZOrder.current() + 1
+
 		local listFrame = DI.Frame({
 			Name = "EnumPopup",
 			BackgroundColor3 = Theme.color.background,
 			BackgroundTransparency = 0.05,
 			Active = true,
-			ZIndex = 51,
-			DI.UICorner({ CornerRadius = UDim.new(0, 4) }),
+			ZIndex = base + 1,
+			DI.UICorner({ CornerRadius = Theme.dim.corner }),
 			DI.UIStroke({ Thickness = 1, Color = Theme.color.outlineColor1 }),
 			DI.UIListLayout({
-				Padding = UDim.new(0, 2),
+				Padding = Theme.dim.gap,
 				FillDirection = Enum.FillDirection.Vertical,
 				SortOrder = Enum.SortOrder.LayoutOrder,
 			}),
-			DI.UIPadding({
-				PaddingTop = UDim.new(0, 2),
-				PaddingBottom = UDim.new(0, 2),
-				PaddingLeft = UDim.new(0, 2),
-				PaddingRight = UDim.new(0, 2),
-			}),
+			uniformPadding(Theme.dim.panelPadding),
 		})
 		listFrame.AutomaticSize = Enum.AutomaticSize.Y
 
@@ -103,7 +103,7 @@ function EnumInput.new(props: EnumInputProps): EnumInput
 			AutoButtonColor = false,
 			BackgroundTransparency = 1,
 			Size = UDim2.fromScale(1, 1),
-			ZIndex = 50,
+			ZIndex = base,
 			listFrame,
 		})
 
@@ -123,9 +123,9 @@ function EnumInput.new(props: EnumInputProps): EnumInput
 				AutoButtonColor = true,
 				Size = UDim2.new(1, 0, 0, OPTION_HEIGHT),
 				LayoutOrder = i,
-				ZIndex = 52,
-				"EnumOption",
-				DI.UICorner({ CornerRadius = UDim.new(0, 4) }),
+				ZIndex = base + 2,
+				"Input",
+				DI.UICorner({ CornerRadius = Theme.dim.corner }),
 			})
 			optionButton.TextXAlignment = Enum.TextXAlignment.Left
 			optionButton.Activated:Connect(function()

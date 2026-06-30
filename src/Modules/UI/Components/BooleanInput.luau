@@ -8,6 +8,10 @@ local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local Artworks = require(ReplicatedStorage.Modules.Artworks)
 local DI = Artworks.DeclarativeInstance
 
+local Styles = require(script.Parent.Parent.Styles.StyleSheet)
+local Theme = Styles.Theme
+local Icons = require(script.Parent.Parent.Styles.Icons)
+
 export type BooleanInputProps = {
 	Default: boolean?,
 	OnChanged: ((value: boolean) -> ())?,
@@ -24,15 +28,16 @@ local BooleanInput = {}
 function BooleanInput.new(props: BooleanInputProps): BooleanInput
 	local value = props.Default or false
 
-	-- 체크 표시 (값이 true일 때만 보임)
-	local mark = DI.Frame({
-		Name = "Mark",
-		Size = UDim2.fromScale(0.6, 0.6),
-		Position = UDim2.fromScale(0.2, 0.2),
-		"CheckMark",
-		DI.UICorner({ CornerRadius = UDim.new(0, 3) }),
+	-- 체크 아이콘 (닫기 버튼과 동일한 삽입 형태: 버튼 안에 UIPadding + "Icon" ImageLabel)
+	-- 항상 표시하고 색만 바꾼다 → 활성: 아이콘 text 색 / 비활성: 아이콘 inputText 색
+	local imagePadding = Theme.dim.imagePadding
+	local checkIcon = DI.ImageLabel({
+		Name = "Icon",
+		Size = UDim2.fromScale(1, 1),
+		BackgroundTransparency = 1,
+		"Icon",
 	})
-	mark.Visible = value
+	checkIcon.Image = Icons.check
 
 	local box = DI.TextButton({
 		Name = "BooleanInput",
@@ -41,13 +46,28 @@ function BooleanInput.new(props: BooleanInputProps): BooleanInput
 		Size = UDim2.fromScale(1, 1),
 		SizeConstraint = Enum.SizeConstraint.RelativeYY,
 		"Checkbox",
-		DI.UICorner({ CornerRadius = UDim.new(0, 4) }),
-		mark,
+		DI.UICorner({ CornerRadius = Theme.dim.corner }),
+		DI.UIPadding({
+			PaddingLeft = UDim.new(0, imagePadding),
+			PaddingRight = UDim.new(0, imagePadding),
+			PaddingTop = UDim.new(0, imagePadding),
+			PaddingBottom = UDim.new(0, imagePadding),
+		}),
+		checkIcon,
 	})
+
+	-- 값에 따라 배경색/아이콘색 갱신 (StyleSheet 규칙보다 우선하도록 직접 지정)
+	--   활성  : 배경 accent  · 아이콘 text
+	--   비활성: 배경 button(원래 배경색) · 아이콘 inputText
+	local function applyVisual()
+		box.BackgroundColor3 = if value then Theme.color.accent else Theme.color.button
+		checkIcon.ImageColor3 = if value then Theme.color.text else Theme.color.inputText
+	end
+	applyVisual() -- 초기 상태 반영
 
 	local function setValue(v: boolean)
 		value = v
-		mark.Visible = value
+		applyVisual()
 		if props.OnChanged then props.OnChanged(value) end
 	end
 

@@ -15,9 +15,10 @@ Styles.Theme = {
 		backgroundColor1 = Color3.fromRGB(19, 20, 25),
 		backgroundColor2 = Color3.fromRGB(40, 43, 56),
 		titleBar = Color3.fromRGB(54, 58, 72),
-		accent = Color3.fromRGB(61, 142, 255),
+		accent = Color3.fromRGB(61, 93, 255),
 		button = Color3.fromRGB(54, 58, 72),
-		text = Color3.fromRGB(196, 201, 214),
+		text = Color3.fromRGB(227, 231, 240),
+		inputText = Color3.fromRGB(137, 151, 177),
 		close = Color3.fromRGB(213, 48, 48),
 		track = Color3.fromRGB(54, 58, 72),
 		knob = Color3.fromRGB(235, 238, 245),
@@ -29,8 +30,9 @@ Styles.Theme = {
 		titleBarHeight = 28,
 		resizeHandle = 16,
 		corner = UDim.new(0, 5),
-		titleBarGap = 5,
-		gap = 5,
+		cornerRound = UDim.new(1, 0), -- 완전히 둥근(원형/알약) 코너
+		panelPadding = UDim.new(0, 5), -- 패널/팝업 컨테이너 안쪽 여백 (B 역할 통일 토큰)
+		gap = UDim.new(0, 5),
 		shadowBlur = UDim.new(0, 25),
 		shadowTransparency = 0.5,
 		scrollbarThickness = 3;
@@ -127,10 +129,11 @@ local RULES: { [string]: { [string]: any } } = {
 
 	[".Input"] = {
 		BackgroundColor3 = Styles.Theme.color.button,
-		TextColor3 = Styles.Theme.color.text,
+		TextColor3 = Styles.Theme.color.inputText,
 		BorderSizePixel = 0,
 		TextSize = 13,
 		ClipsDescendants = true,
+		TextTruncate = Enum.TextTruncate.AtEnd,
 	},
 
 	[".Checkbox"] = {
@@ -157,7 +160,9 @@ local RULES: { [string]: { [string]: any } } = {
 		BackgroundColor3 = Styles.Theme.color.track,
 		TextColor3 = Styles.Theme.color.text,
 		BorderSizePixel = 0,
-		TextSize = 13
+		TextSize = 13,
+		ClipsDescendants = true,
+		TextTruncate = Enum.TextTruncate.AtEnd,
 	},
 
 }

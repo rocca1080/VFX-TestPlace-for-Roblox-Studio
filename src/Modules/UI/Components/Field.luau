@@ -56,7 +56,7 @@ function Field.new(props: FieldProps): Field
 		BackgroundTransparency = 1,
 		LayoutOrder = props.LayoutOrder or 0,
 		DI.UIListLayout({
-			Padding = UDim.new(0, Theme.dim.gap),
+			Padding = Theme.dim.gap,
 			FillDirection = Enum.FillDirection.Horizontal,
 			HorizontalFlex = Enum.UIFlexAlignment.Fill,
 			VerticalAlignment = Enum.VerticalAlignment.Center,

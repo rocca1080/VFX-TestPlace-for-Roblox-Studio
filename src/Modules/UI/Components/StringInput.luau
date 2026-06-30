@@ -32,7 +32,7 @@ function StringInput.new(props: StringInputProps): StringInput
 		ClearTextOnFocus = false,
 		Size = UDim2.fromScale(1, 1),
 		"Input",
-		DI.UICorner({ CornerRadius = UDim.new(0, 4) }),
+		DI.UICorner({ CornerRadius = Theme.dim.corner }),
 		DI.UIPadding({
 			PaddingLeft = UDim.new(0, Theme.dim.inputPadding),
 			PaddingRight = UDim.new(0, Theme.dim.inputPadding),

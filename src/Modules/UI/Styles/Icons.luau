@@ -5,6 +5,7 @@
 
 local Icons = {
 	close = "rbxassetid://128972984735078", -- 창 닫기(X)
+	check = "rbxassetid://77791898741029"
 }
 
 return Icons

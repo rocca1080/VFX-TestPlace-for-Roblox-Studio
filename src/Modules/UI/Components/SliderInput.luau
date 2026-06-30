@@ -34,7 +34,7 @@ function SliderInput.new(props: SliderInputProps): SliderInput
 		Name = "Fill",
 		Size = UDim2.fromScale(value, 1),
 		"SliderFill",
-		DI.UICorner({ CornerRadius = UDim.new(1, 0) }),
+		DI.UICorner({ CornerRadius = Theme.dim.cornerRound }),
 	})
 
 	local knob = DI.Frame({
@@ -43,7 +43,7 @@ function SliderInput.new(props: SliderInputProps): SliderInput
 		Position = UDim2.new(value, 0, 0.5, 0),
 		Size = UDim2.fromOffset(14, 14),
 		"SliderKnob",
-		DI.UICorner({ CornerRadius = UDim.new(1, 0) }),
+		DI.UICorner({ CornerRadius = Theme.dim.cornerRound }),
 	})
 
 	-- 트랙: (1,1) 슬롯 안에서 세로 가운데 정렬된 가로 바
@@ -55,7 +55,7 @@ function SliderInput.new(props: SliderInputProps): SliderInput
 		Position = UDim2.fromScale(0.5, 0.5),
 		Size = UDim2.new(1, 0, 0, 8),
 		"SliderTrack",
-		DI.UICorner({ CornerRadius = UDim.new(1, 0) }),
+		DI.UICorner({ CornerRadius = Theme.dim.cornerRound }),
 		fill,
 		knob,
 	})
@@ -81,7 +81,7 @@ function SliderInput.new(props: SliderInputProps): SliderInput
 			BackgroundTransparency = 0.05,
 			ZIndex = 60,
 			"LabelText",
-			DI.UICorner({ CornerRadius = UDim.new(0, 4) }),
+			DI.UICorner({ CornerRadius = Theme.dim.corner }),
 			DI.UIStroke({ Thickness = 1, Color = Theme.color.outlineColor1 }),
 		})
 		t.TextXAlignment = Enum.TextXAlignment.Center

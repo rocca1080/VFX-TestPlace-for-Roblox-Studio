@@ -16,6 +16,7 @@ local Window = require(script.Parent.Window)
 local NumberInput = require(script.Parent.NumberInput)
 local Styles = require(script.Parent.Parent.Styles.StyleSheet)
 local Theme = Styles.Theme
+local uniformPadding = require(script.Parent.Parent.Styles.Padding)
 
 local ColorInput = {}
 
@@ -94,7 +95,7 @@ function ColorInput.new(props: ColorInputProps): ColorInput
 		LayoutOrder = 1,
 		BackgroundColor3 = value,
 		"Swatch",
-		DI.UICorner({ CornerRadius = UDim.new(0, 4) }),
+		DI.UICorner({ CornerRadius = Theme.dim.corner }),
 	})
 	-- 스와치는 정사각형 고정(RelativeYY) + flex에서 제외(None) → RGB 입력들만 남은 폭을 나눠 채움
 	local swatchFlex = DI.UIFlexItem({})
@@ -122,7 +123,7 @@ function ColorInput.new(props: ColorInputProps): ColorInput
 		Size = UDim2.fromScale(1, 1),
 		BackgroundTransparency = 1,
 		DI.UIListLayout({
-			Padding = UDim.new(0, Theme.dim.gap),
+			Padding = Theme.dim.gap,
 			FillDirection = Enum.FillDirection.Horizontal,
 			HorizontalFlex = Enum.UIFlexAlignment.Fill,
 			VerticalAlignment = Enum.VerticalAlignment.Center,
@@ -174,7 +175,7 @@ function ColorInput.new(props: ColorInputProps): ColorInput
 		local svStroke = DI.UIStroke({ Thickness = 2, Color = BLACK })
 		local svKnob = DI.Frame({
 			Name = "Knob", AnchorPoint = Vector2.new(0.5, 0.5), Size = UDim2.fromOffset(14, 14),
-			BackgroundColor3 = value, ZIndex = 6, DI.UICorner({ CornerRadius = UDim.new(1, 0) }), svStroke,
+			BackgroundColor3 = value, ZIndex = 6, DI.UICorner({ CornerRadius = Theme.dim.cornerRound }), svStroke,
 		})
 		-- 드래그 입력을 받는 투명 버튼 (오버레이 위, 노브 아래) — 노브는 비활성 Frame이라 입력은 여기로 떨어짐
 		local svSurface = DI.TextButton({
@@ -185,7 +186,7 @@ function ColorInput.new(props: ColorInputProps): ColorInput
 		local svSquare = DI.CanvasGroup({
 			Name = "SV", Size = UDim2.new(1, 0, 0, 0),
 			BackgroundColor3 = Color3.fromHSV(h, 1, 1), LayoutOrder = 1, ZIndex = 1,
-			DI.UICorner({ CornerRadius = UDim.new(0, 4) }),
+			DI.UICorner({ CornerRadius = Theme.dim.corner }),
 			whiteOverlay, blackOverlay, svSurface, svKnob,
 		})
 		svSquare.ClipsDescendants = true
@@ -200,11 +201,11 @@ function ColorInput.new(props: ColorInputProps): ColorInput
 		local hueHandle = DI.Frame({
 			Name = "Handle", AnchorPoint = Vector2.new(0.5, 0.5), Position = UDim2.fromScale(h, 0.5),
 			Size = UDim2.fromOffset(8, 22), BackgroundColor3 = Color3.fromHSV(h, 1, 1), ZIndex = 2,
-			DI.UICorner({ CornerRadius = UDim.new(0, 3) }), DI.UIStroke({ Thickness = 2, Color = BLACK }),
+			DI.UICorner({ CornerRadius = Theme.dim.corner }), DI.UIStroke({ Thickness = 2, Color = BLACK }),
 		})
 		local hueBar = DI.TextButton({
 			Name = "Hue", Text = "", AutoButtonColor = false, Size = UDim2.new(1, 0, 0, 16),
-			BackgroundColor3 = WHITE, LayoutOrder = 2, ZIndex = 1, DI.UICorner({ CornerRadius = UDim.new(0, 4) }),
+			BackgroundColor3 = WHITE, LayoutOrder = 2, ZIndex = 1, DI.UICorner({ CornerRadius = Theme.dim.corner }),
 			DI.UIGradient({ Color = ColorSequence.new(hueKeys), Rotation = 0 }), hueHandle,
 		})
 
@@ -213,12 +214,12 @@ function ColorInput.new(props: ColorInputProps): ColorInput
 		local hexInput = DI.TextBox({
 			Name = "HexInput", Text = toHex(value), PlaceholderText = "RRGGBB", ClearTextOnFocus = false,
 			Position = UDim2.new(0, 40, 0, 0), Size = UDim2.new(1, -88, 1, 0), "Input",
-			DI.UICorner({ CornerRadius = UDim.new(0, 4) }),
+			DI.UICorner({ CornerRadius = Theme.dim.corner }),
 		})
 		hexInput.TextXAlignment = Enum.TextXAlignment.Center
 		local preview = DI.Frame({
 			Name = "Preview", Position = UDim2.new(1, -44, 0, 0), Size = UDim2.new(0, 44, 1, 0),
-			BackgroundColor3 = value, "Swatch", DI.UICorner({ CornerRadius = UDim.new(0, 4) }),
+			BackgroundColor3 = value, "Swatch", DI.UICorner({ CornerRadius = Theme.dim.corner }),
 		})
 		local hexRow = DI.Frame({
 			Name = "HexRow", Size = UDim2.new(1, 0, 0, 24), BackgroundTransparency = 1, LayoutOrder = 3,
@@ -237,7 +238,7 @@ function ColorInput.new(props: ColorInputProps): ColorInput
 			local chInput = DI.TextBox({
 				Name = channelNames[i], Text = "0", PlaceholderText = channelNames[i], ClearTextOnFocus = false,
 				Position = UDim2.new((i - 1) / 3, 16, 0, 0), Size = UDim2.new(1 / 3, -20, 1, 0), "Input",
-				DI.UICorner({ CornerRadius = UDim.new(0, 4) }),
+				DI.UICorner({ CornerRadius = Theme.dim.corner }),
 			})
 			chInput.TextXAlignment = Enum.TextXAlignment.Center
 			pickerRgb[i] = chInput
@@ -249,16 +250,13 @@ function ColorInput.new(props: ColorInputProps): ColorInput
 		})
 		for _, child in rgbChildren do child.Parent = rgbRow end
 
-		local listLayout = DI.UIListLayout({ Padding = UDim.new(0, 6) })
+		local listLayout = DI.UIListLayout({ Padding = Theme.dim.gap })
 		listLayout.FillDirection = Enum.FillDirection.Vertical
 		listLayout.SortOrder = Enum.SortOrder.LayoutOrder
 
 		local content = DI.Frame({
 			Name = "ColorPicker", Size = UDim2.fromScale(1, 1), BackgroundTransparency = 1,
-			DI.UIPadding({
-				PaddingLeft = UDim.new(0, 8), PaddingRight = UDim.new(0, 8),
-				PaddingTop = UDim.new(0, 8), PaddingBottom = UDim.new(0, 8),
-			}),
+			uniformPadding(Theme.dim.panelPadding),
 			listLayout, svSquare, hueBar, hexRow, rgbRow,
 		})
 
@@ -329,7 +327,8 @@ function ColorInput.new(props: ColorInputProps): ColorInput
 			closed = true
 			refreshOpenPicker = nil
 			if activeClose == closePicker then activeClose = nil end
-			if pickerWindow then pickerWindow.Root:Destroy() end
+			-- 직접 Destroy 대신 Window의 애니메이션 닫기를 호출 → exit 트윈 재생 후 파괴
+			if pickerWindow then pickerWindow.Close() end
 		end
 
 		pickerWindow = Window.new({

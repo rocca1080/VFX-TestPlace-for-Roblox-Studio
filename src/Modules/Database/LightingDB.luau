@@ -9,9 +9,9 @@ export type LightingPreset = {
     EnvironmentDiffuseScale : number?;
     EnvironmentSpecularScale : number?;
     GlobalShadows : boolean?;
-    LightingStyle : Enum.LightingStyle?;
+    -- LightingStyle : Enum.LightingStyle?; -- RobloxScriptSecurity: 런타임 스크립트로 쓰기 불가
     OutdoorAmbient : Color3?;
-    PrioritizeLightingQuality : boolean?;
+    -- PrioritizeLightingQuality : boolean?; -- RobloxScriptSecurity: 런타임 스크립트로 쓰기 불가
     ShadowSoftness : number?;
 
     --// Data
@@ -35,9 +35,9 @@ local LightingDB : { [string]: LightingPreset } = {
         EnvironmentDiffuseScale = 1;
         EnvironmentSpecularScale = 1;
         GlobalShadows = true;
-        LightingStyle = Enum.LightingStyle.Soft;
+        -- LightingStyle = Enum.LightingStyle.Soft; -- RobloxScriptSecurity: 런타임 적용 불가
         OutdoorAmbient = Color3.fromRGB(70, 70, 70);
-        PrioritizeLightingQuality = true;
+        -- PrioritizeLightingQuality = true; -- RobloxScriptSecurity: 런타임 적용 불가
         ShadowSoftness = 0.2;
 
         --// Data
@@ -51,7 +51,8 @@ local LightingDB : { [string]: LightingPreset } = {
     };
 
     ["Sol's RNG Lighting"] = {
-        LightingStyle = Enum.LightingStyle.Realistic;
+        -- LightingStyle = Enum.LightingStyle.Realistic; -- RobloxScriptSecurity: 런타임 적용 불가
+        Brightness = 1;
         ShadowSoftness = 0.2;
     };
 

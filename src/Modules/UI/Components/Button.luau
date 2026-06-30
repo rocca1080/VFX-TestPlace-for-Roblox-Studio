@@ -5,6 +5,9 @@ local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local Artworks = require(ReplicatedStorage.Modules.Artworks)
 local DI = Artworks.DeclarativeInstance
 
+local Styles = require(script.Parent.Parent.Styles.StyleSheet)
+local Theme = Styles.Theme
+
 export type ButtonProps = {
 	Text: string?,
 	Size: UDim2?,
@@ -23,7 +26,7 @@ function Button.new(props: ButtonProps): TextButton
 
 		LayoutOrder = props.LayoutOrder or 0,
 		"Btn",
-		DI.UICorner({ CornerRadius = UDim.new(0, 4) }),
+		DI.UICorner({ CornerRadius = Theme.dim.corner }),
 		Activated = function()
 			if props.OnClick then props.OnClick() end
 		end,

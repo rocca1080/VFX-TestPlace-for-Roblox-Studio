@@ -190,6 +190,30 @@ local function bindToggle(inst: GuiObject, def: { [string]: any })
 		end
 	end
 
+	-- on/off 속성을 트윈 없이 즉시(동기적으로) 적용한다. (초기 베이스라인 세팅용)
+	-- playProps는 INSTANT라도 비동기로 적용되므로, 직후 enter 트윈에 캔슬당해 시작점이 어긋날 수 있다.
+	-- 따라서 초기 베이스라인은 트윈이 아니라 속성을 직접 써서 동기적으로 맞춘다.
+	local function snap(useOn: boolean)
+		local props = if useOn then def.on else def.off
+		if props then
+			for k, v in props :: { [string]: any } do
+				if k == "Scale" then
+					if scaleRef then scaleRef.Scale = v end
+				else
+					(inst :: any)[k] = v
+				end
+			end
+		end
+		for _, t in targets do
+			local p = if useOn then t.on else t.off
+			if p then
+				for k, v in p :: { [string]: any } do
+					(t.inst :: any)[k] = v
+				end
+			end
+		end
+	end
+
 	local function refresh(animate: boolean)
 		local on = inst:GetAttribute(attr) == true
 		local tween = if animate then (if on then enterT else exitT) else INSTANT
@@ -197,7 +221,16 @@ local function bindToggle(inst: GuiObject, def: { [string]: any })
 		apply(on, tween, not on)
 	end
 
-	refresh(false) -- 초기 상태(트윈 없이)
+	-- 초기화: 켜진 채 생성됐으면 off 베이스라인을 즉시 깐 뒤 enter 트윈을 재생하고,
+	-- 꺼진 상태면 트윈 없이 즉시 off로 스냅한다.
+	-- → 바인딩(task.defer) 시점보다 먼저 Open=true로 만들어진 창(팝업 피커 등)도
+	--    "변화"를 못 봐 스냅되던 문제 없이 열기 애니메이션이 자동 적용된다.
+	if inst:GetAttribute(attr) == true then
+		snap(false) -- off 베이스라인(Scale 0 등) 즉시 적용
+		refresh(true) -- Visible=true + enter 트윈
+	else
+		refresh(false) -- 초기 상태(트윈 없이)
+	end
 	local changedConn = inst:GetAttributeChangedSignal(attr):Connect(function() refresh(true) end)
 	inst.Destroying:Connect(function()
 		if selfTween then selfTween:Cancel() end

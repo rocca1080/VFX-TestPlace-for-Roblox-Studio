@@ -11,11 +11,11 @@ local AuraPanel = {}
 
 function AuraPanel.new(): ScrollingFrame
 	return ScrollPanel.new({
-		Label.new({ Text = "Aura Test", LayoutOrder = 1 }),
-		Label.new({ Text = "(DB not connected — UI skeleton only)", LayoutOrder = 2 }),
-		Button.new({ Text = "Select Aura ▼", LayoutOrder = 3, OnClick = function() end }),
-		Button.new({ Text = "Spawn", LayoutOrder = 4, OnClick = function() end }),
-		Button.new({ Text = "Remove", LayoutOrder = 5, OnClick = function() end }),
+		Label.new({ Text = "Aura Test" }),
+		Label.new({ Text = "(DB not connected — UI skeleton only)" }),
+		Button.new({ Text = "Select Aura ▼", OnClick = function() end }),
+		Button.new({ Text = "Spawn", OnClick = function() end }),
+		Button.new({ Text = "Remove", OnClick = function() end }),
 	})
 end
 

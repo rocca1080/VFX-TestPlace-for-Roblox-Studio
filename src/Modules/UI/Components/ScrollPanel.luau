@@ -16,6 +16,8 @@ local DI = Artworks.DeclarativeInstance
 
 local Styles = require(script.Parent.Parent.Styles.StyleSheet)
 local Theme = Styles.Theme
+local uniformPadding = require(script.Parent.Parent.Styles.Padding)
+local ordered = require(script.Parent.Parent.Styles.Layout)
 
 local ScrollPanel = {}
 
@@ -23,7 +25,7 @@ local ScrollPanel = {}
 function ScrollPanel.new(children: { GuiObject }?): ScrollingFrame
 	local scrollbarThickness = Theme.dim.scrollbarThickness
 
-	local layout = DI.UIListLayout({ Padding = UDim.new(0, Theme.dim.gap) })
+	local layout = DI.UIListLayout({ Padding = Theme.dim.gap })
 	layout.SortOrder = Enum.SortOrder.LayoutOrder
 	layout.FillDirection = Enum.FillDirection.Vertical
 
@@ -36,18 +38,15 @@ function ScrollPanel.new(children: { GuiObject }?): ScrollingFrame
 		ScrollBarThickness = scrollbarThickness,
 		ScrollBarImageColor3 = Theme.color.knob,
 		layout,
-		DI.UIPadding({
-			PaddingLeft = UDim.new(0, Theme.dim.gap),
-			PaddingRight = UDim.new(0, Theme.dim.gap),
-			PaddingTop = UDim.new(0, Theme.dim.gap),
-			PaddingBottom = UDim.new(0, Theme.dim.gap),
-		}),
+		uniformPadding(Theme.dim.panelPadding),
 	})
 	panel.AutomaticCanvasSize = Enum.AutomaticSize.Y
 	panel.ScrollingDirection = Enum.ScrollingDirection.Y
 	panel.VerticalScrollBarInset = Enum.ScrollBarInset.ScrollBar
 
 	if children then
+		-- 배열 순서대로 LayoutOrder 자동 부여 (패널에서 LayoutOrder를 일일이 안 적어도 됨)
+		ordered(children)
 		for _, child in children do
 			child.Parent = panel
 		end

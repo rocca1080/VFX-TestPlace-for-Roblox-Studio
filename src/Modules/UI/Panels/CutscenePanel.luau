@@ -11,11 +11,11 @@ local CutscenePanel = {}
 
 function CutscenePanel.new(): ScrollingFrame
 	return ScrollPanel.new({
-		Label.new({ Text = "Cutscene Test", LayoutOrder = 1 }),
-		Label.new({ Text = "(DB not connected — UI skeleton only)", LayoutOrder = 2 }),
-		Button.new({ Text = "Select Cutscene ▼", LayoutOrder = 3, OnClick = function() end }),
-		Button.new({ Text = "Play", LayoutOrder = 4, OnClick = function() end }),
-		Button.new({ Text = "Stop", LayoutOrder = 5, OnClick = function() end }),
+		Label.new({ Text = "Cutscene Test" }),
+		Label.new({ Text = "(DB not connected — UI skeleton only)" }),
+		Button.new({ Text = "Select Cutscene ▼", OnClick = function() end }),
+		Button.new({ Text = "Play", OnClick = function() end }),
+		Button.new({ Text = "Stop", OnClick = function() end }),
 	})
 end
 

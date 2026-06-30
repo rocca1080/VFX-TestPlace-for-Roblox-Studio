@@ -39,16 +39,12 @@ function ComponentTestPanel.new(): ScrollingFrame
 		Button.new({ Text = "Button", OnClick = function() print("[Test] Button clicked") end }),
 	}
 
-	-- 항목 사이에 구분선을 넣고, 전체에 순서(LayoutOrder)를 부여
+	-- 항목 사이에 구분선을 끼운다. LayoutOrder는 ScrollPanel이 배열 순서대로 자동 부여.
 	local children: { GuiObject } = {}
-	local order = 0
 	for i, item in items do
-		order += 1
-		item.LayoutOrder = order
 		table.insert(children, item)
 		if i < #items then
-			order += 1
-			table.insert(children, Divider.new({ LayoutOrder = order }))
+			table.insert(children, Divider.new())
 		end
 	end
 
